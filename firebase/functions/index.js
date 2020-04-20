@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const express = require('express');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/users')
-const { getAllScreams, postOneScream, getScream } = require('./handlers/screams')
+const { getAllScreams, postOneScream, getScream, commentOnScream, likeScream, unlikeScream } = require('./handlers/screams')
 const FBAuth = require('./util/FBAuth');
 
 const app = express();
@@ -9,8 +9,10 @@ const app = express();
 // Scream routes
 app.post('/scream', FBAuth, postOneScream);
 app.get('/screams', getAllScreams);
-app.get('/scream:screamId', getScream);
-// TODO delete scream
+app.get('/scream/:screamId', getScream);
+app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
+app.get('/scream/:screamId/like', FBAuth, likeScream);
+app.get('/scream/:screamId/unlike', FBAuth, unlikeScream);
 // TODO like a scream
 // TODO unlike a scream
 // TODO comment on scream

@@ -8,6 +8,14 @@ let db = {
       commentCount: 2
     }
   ],
+  comments: [
+    {
+      body: "nice scream!",
+      createdAt: "2020-04-18T11:49:33.628Z",
+      screamId: " EgJwZZd8oY09rGLSmXYB",
+      userHandle: "new"
+    }
+  ],
   users: [
     {
       userId: "Lzajd5K3k2NmsTwrno3ugMN97Oo1",
