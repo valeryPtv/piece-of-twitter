@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const express = require('express');
+const cors = require('cors');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser, getUserDetails, markNotificationsRead } = require('./handlers/users')
 const { getAllScreams, postOneScream, getScream, deleteScream, commentOnScream, likeScream, unlikeScream } = require('./handlers/screams')
 const FBAuth = require('./util/FBAuth');
@@ -7,6 +8,7 @@ const FBAuth = require('./util/FBAuth');
 const { db } = require('./util/admin');
 
 const app = express();
+app.use(cors({ origin: true }));
 
 // Scream routes
 app.post('/scream', FBAuth, postOneScream);
