@@ -1,45 +1,44 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { withRouter } from 'react-router';
 
 import logoImg from 'images/icon.png';
-import { signin, signup } from 'services';
+import { signUpAction, signInAction } from 'store/user/userActions';
 
-export default class Auth extends Component {
+class Auth extends Component {
   state = {
     signup: {
       authData: {
         email: '',
         password: '',
         confirmPassword: '',
-        userHandle: ''
+        handle: ''
       },
       validationErrors: {
         email: null,
         password: null,
         confirmPassword: null,
-        userHandle: null
+        handle: null
       }
     },
     signin: {
       authData: {
         email: '',
-        password: '',
-        confirmPassword: '',
-        userHandle: ''
+        password: ''
       },
       validationErrors: {
         email: null,
-        password: null,
-        confirmPassword: null,
-        userHandle: null
+        password: null
       }
     },
-    activeMode: 'signup'
+    activeMode: this.props.history.location.pathname.slice(1)
   }
 
   validators = {
@@ -47,20 +46,23 @@ export default class Auth extends Component {
     email: str => (str.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? null : 'Invalid email'),
     password: str => (str.length >= 6 ? null : 'Password should have at least 6 characters'),
     confirmPassword: confirmPassword => (confirmPassword === this.state[this.state.activeMode].authData.password ? null : 'Passwords should be equal'),
-    userHandle: str => (str.length >= 6 ? null : 'User handle should have at least 6 characters')
+    handle: str => (str.length >= 6 ? null : 'User handle should have at least 6 characters')
   }
 
-  // checkValidity = () => Object.values(this.state[this.state.activeMode].validationErrors)
-  //   .every(item => item === null)
+  componentDidMount () {
+    this.props.history.listen(location => {
+      this.setState(state => ({
+        ...state,
+        activeMode: location.pathname.slice(1)
+      }));
+      // location is an object like window.location
+    });
+  }
 
   checkValidity = () => {
-    // return Object.values(this.state[this.state.activeMode].validationErrors)
-    //     .every(item => item === null);
     const authMode = this.state[this.state.activeMode];
-    const res = Object.keys(authMode.authData)
+    return Object.keys(authMode.authData)
       .every(item => authMode.validationErrors[item] === null && authMode.authData[item].length);
-    console.log('checkValidity', res);
-    return res;
   }
 
   handleInput = e => {
@@ -70,7 +72,7 @@ export default class Auth extends Component {
       [state.activeMode]: {
         validationErrors: {
           ...state[state.activeMode].validationErrors,
-          [name]: this.validators[name](value)
+          [name]: this.validators[name]
         },
         authData: {
           ...state[state.activeMode].authData,
@@ -81,11 +83,27 @@ export default class Auth extends Component {
   }
 
   handleAuth = () => {
-    const res = signup(this.state[this.state.activeMode].authData);
-    console.log('signin', res);
+    if (this.state.activeMode === 'signup') {
+      this.props.handleSignUp(this.state.signup.authData);
+    } else if (this.state.activeMode === 'signin') {
+      this.props.handleSignIn(this.state.signin.authData);
+    }
   }
 
   render () {
+    const changeAuthMode = this.state.activeMode === 'signup' ? (
+      <p>
+        Already have an account ?
+        {' '}
+        <Link to="/signin">Sign in</Link>
+      </p>
+    ) : (
+      <p>
+        Don't have an account ? Sign up
+        {' '}
+        <Link to="/signup">here</Link>
+      </p>
+    );
     return (
       <div>
         <Grid container justify="center">
@@ -94,7 +112,7 @@ export default class Auth extends Component {
               <img src={logoImg} alt="Socialape logo" />
             </Box>
             <Typography variant="h3" align="center">
-              signup
+              { this.state.activeMode === 'signin' ? 'Sign in' : 'Sign up' }
             </Typography>
             <form>
               <Grid container direction="column">
@@ -110,9 +128,17 @@ export default class Auth extends Component {
                     margin="dense"
                   />
                 ))}
-                <Button onClick={this.handleAuth} disabled={!this.checkValidity()}>
-                  { this.state.activeMode === 'signup' ? 'Sign up' : 'Sign in' }
-                </Button>
+                <Box mt={3} mb={5}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!this.checkValidity()}
+                    onClick={this.handleAuth}
+                  >
+                    { this.state.activeMode === 'signup' ? 'Sign up' : 'Sign in' }
+                  </Button>
+                </Box>
+                { changeAuthMode }
               </Grid>
             </form>
           </Grid>
@@ -121,3 +147,10 @@ export default class Auth extends Component {
     );
   }
 }
+
+const mapDispatchToProps = dispatch => ({
+  handleSignUp: credentials => dispatch(signUpAction(credentials)),
+  handleSignIn: credentials => dispatch(signInAction(credentials))
+});
+
+export default withRouter(connect(null, mapDispatchToProps)(Auth));
