@@ -3,12 +3,13 @@ import {
   BrowserRouter as Router, Route, Switch
 } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 // import 'App.css';
 import 'styles/index.sass';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import themeConfig from 'util/theme';
-import store from 'store';
+import { store, persistor } from 'store';
 
 // Pages
 import Home from 'views/Home';
@@ -23,21 +24,23 @@ class App extends Component {
   render () {
     return (
       <Provider store={store}>
-        <MuiThemeProvider theme={theme}>
-          <div className="App">
-            <Router>
-              <Navbar />
-              <div className="container">
-                <Switch>
-                  <Route exact path="/" component={Home} />
-                  <Route exact path="/signin" component={Auth} />
-                  <Route exact path="/signup" component={Auth} />
-                </Switch>
-              </div>
-            </Router>
-            <h1>Our App</h1>
-          </div>
-        </MuiThemeProvider>
+        <PersistGate persistor={persistor} loading={<div>Loading state...</div>}>
+          <MuiThemeProvider theme={theme}>
+            <div className="App">
+              <Router>
+                <Navbar />
+                <div className="container">
+                  <Switch>
+                    <Route exact path="/" component={Home} />
+                    <Route exact path="/signin" component={Auth} />
+                    <Route exact path="/signup" component={Auth} />
+                  </Switch>
+                </div>
+              </Router>
+              <h1>Our App</h1>
+            </div>
+          </MuiThemeProvider>
+        </PersistGate>
       </Provider>
     );
   }

@@ -72,7 +72,7 @@ class Auth extends Component {
       [state.activeMode]: {
         validationErrors: {
           ...state[state.activeMode].validationErrors,
-          [name]: this.validators[name]
+          [name]: this.validators[name](value)
         },
         authData: {
           ...state[state.activeMode].authData,
@@ -84,9 +84,10 @@ class Auth extends Component {
 
   handleAuth = () => {
     if (this.state.activeMode === 'signup') {
-      this.props.handleSignUp(this.state.signup.authData);
+      this.props.signUpAction(this.state.signup.authData, this.props.history.push);
     } else if (this.state.activeMode === 'signin') {
-      this.props.handleSignIn(this.state.signin.authData);
+      console.log('this.props.history.push', this.props.history.push);
+      this.props.signInAction(this.state.signin.authData, this.props.history.push);
     }
   }
 
@@ -117,6 +118,7 @@ class Auth extends Component {
             <form>
               <Grid container direction="column">
                 {Object.keys(this.state[this.state.activeMode].authData).map(key => (
+                  // { console.log('helper text', this.state[this.state.activeMode].validationErrors[key] || ''), '' }
                   <TextField
                     onChange={this.handleInput}
                     key={key}
@@ -148,9 +150,10 @@ class Auth extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  handleSignUp: credentials => dispatch(signUpAction(credentials)),
-  handleSignIn: credentials => dispatch(signInAction(credentials))
+const mapStateToProps = state => ({
+  isLoggedIn: state.accessToken
 });
 
-export default withRouter(connect(null, mapDispatchToProps)(Auth));
+const mapDispatchToProps = { signUpAction, signInAction };
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Auth));
