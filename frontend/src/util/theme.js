@@ -11,6 +11,12 @@ export default {
       main: '#ff3d00',
       dark: '#b22a00',
       contrastText: '#fff'
+    },
+    grey: {
+      light: '#757575',
+      main: '#757575',
+      dark: '#757575',
+      contrastText: '#757575'
     }
   },
   typography: {

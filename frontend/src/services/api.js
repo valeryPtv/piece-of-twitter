@@ -1,10 +1,13 @@
 import axios from 'axios';
 
 // 'https://europe-west1-socialape-d081e.cloudfunctions.net/api';
-axios.defaults.baseURL = 'https://europe-west1-socialape228.cloudfunctions.net/api';
 
-export { axios } from 'axios';
+const instance = axios.create({
+  baseURL: 'https://europe-west1-socialape228.cloudfunctions.net/api'
+});
 
-export const setAuthorizationHeader = accessToken => {
-  axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+const setAuthorizationHeader = accessToken => {
+  instance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 };
+
+export { instance as axios, setAuthorizationHeader };

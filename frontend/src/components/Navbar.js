@@ -22,7 +22,7 @@ export default class Navbar extends Component {
       <AppBar>
         <Toolbar className="nav-container">
           <Button color="inherit" component={Link} to="/">Home</Button>
-          <Button color="inherit" component={Link} to="/signin">Login</Button>
+          <Button color="inherit" component={Link} to="/signin">Sign in</Button>
           <Button color="inherit" component={Link} to="/signup">Signup</Button>
         </Toolbar>
       </AppBar>

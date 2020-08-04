@@ -7,7 +7,9 @@ export const signUpAction = (credentials, pushToHistory) => async dispatch => {
     const res = await signup(credentials);
     dispatch({
       type: actionTypes.SIGN_UP,
-      accessToken: res.data.token
+      accessToken: res.data.token,
+      email: credentials.email,
+      handle: credentials.handle
     });
     setAuthorizationHeader(res.data.token);
     console.log('signUpAction', res);
@@ -20,9 +22,8 @@ export const signUpAction = (credentials, pushToHistory) => async dispatch => {
 export const signInAction = (credentials, pushToHistory) => async dispatch => {
   try {
     const res = await signin(credentials);
-    console.log('signInAction res', res);
     dispatch({
-      type: actionTypes.SIGN_UP,
+      type: actionTypes.SIGN_IN,
       accessToken: res.data.token
     });
     setAuthorizationHeader(res.data.token);

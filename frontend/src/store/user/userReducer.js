@@ -2,7 +2,7 @@ import * as actionTypes from 'store/user/actionTypes';
 
 const initialState = {
   accessToken: null,
-  userName: null,
+  handle: null,
   userEmail: null,
   isAuthInProgress: false
 };
@@ -15,7 +15,12 @@ export default (state = initialState, action) => {
         accessToken: action.accessToken
       };
     case actionTypes.SIGN_UP:
-      return state;
+      return {
+        ...state,
+        accessToken: action.accessToken,
+        email: action.email,
+        handle: action.handle
+      };
     case actionTypes.CHANGE_AUTH_PROGRESS_STATUS:
       return {
         ...state,

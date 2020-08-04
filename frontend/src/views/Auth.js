@@ -41,6 +41,8 @@ class Auth extends Component {
     activeMode: this.props.history.location.pathname.slice(1)
   }
 
+  unregisterHistoryListener = null
+
   validators = {
     // eslint-disable-next-line arrow-parens
     email: str => (str.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? null : 'Invalid email'),
@@ -50,13 +52,17 @@ class Auth extends Component {
   }
 
   componentDidMount () {
-    this.props.history.listen(location => {
+    this.unregisterHistoryListener = this.props.history.listen(location => {
       this.setState(state => ({
         ...state,
         activeMode: location.pathname.slice(1)
       }));
       // location is an object like window.location
     });
+  }
+
+  componentWillUnmount () {
+    this.unregisterHistoryListener();
   }
 
   checkValidity = () => {
@@ -118,7 +124,6 @@ class Auth extends Component {
             <form>
               <Grid container direction="column">
                 {Object.keys(this.state[this.state.activeMode].authData).map(key => (
-                  // { console.log('helper text', this.state[this.state.activeMode].validationErrors[key] || ''), '' }
                   <TextField
                     onChange={this.handleInput}
                     key={key}

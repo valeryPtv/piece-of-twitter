@@ -9,6 +9,7 @@ import 'styles/index.sass';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import themeConfig from 'util/theme';
+import AuthRoute from "components/AuthRoute";
 import { store, persistor } from 'store';
 
 // Pages
@@ -31,6 +32,9 @@ class App extends Component {
                 <Navbar />
                 <div className="container">
                   <Switch>
+                    {/*<AuthRoute path="/" component={Home} isAuthRequired />*/}
+                    {/*<AuthRoute path="/signin" component={Auth} />*/}
+                    {/*<AuthRoute path="/signup" component={Auth} />*/}
                     <Route exact path="/" component={Home} />
                     <Route exact path="/signin" component={Auth} />
                     <Route exact path="/signup" component={Auth} />
@@ -45,5 +49,9 @@ class App extends Component {
     );
   }
 }
+
+// const mapStateToProps = state => ({
+//   accessToken: state.user.accessToken
+// });
 
 export default App;
