@@ -12,7 +12,6 @@ export const signUpAction = (credentials, pushToHistory) => async dispatch => {
       handle: credentials.handle
     });
     setAuthorizationHeader(res.data.token);
-    console.log('signUpAction', res);
     pushToHistory('/');
   } catch (e) {
     console.error(e);

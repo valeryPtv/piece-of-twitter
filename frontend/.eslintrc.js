@@ -5,6 +5,7 @@ module.exports = {
     'es6': true
   },
   'rules': {
+    'react/jsx-props-no-spreading': 'off',
     'arrow-parens': ['error', 'as-needed'],
     'react/state-in-constructor': ['error', 'never'],
     'space-before-function-paren': ['error', 'always'],

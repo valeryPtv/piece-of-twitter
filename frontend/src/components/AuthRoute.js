@@ -4,34 +4,37 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const AuthRoute = ({
-  component: Component, isAuthRequired, path, isLoggedIn
+  component: Component, isAuthRequired, path, isLoggedIn, ...rest
 }) => {
-  if (isAuthRequired && !isLoggedIn) {
-    return <Redirect to={{ pathname: '/signin' }} />;
-  } if (path.includes('signin') || path.includes('signup')) {
-    // if we are going to signin or signup
-    return <Redirect to={{ pathname: '/home' }} />;
-  }
-  return (
-    <Route exact path={path}>
-      <Component />
-    </Route>
-  );
+  const renderRoute = props => {
+    if (isAuthRequired && !isLoggedIn) {
+      return <Redirect to={{ pathname: '/signin' }} />;
+    } if (isLoggedIn && (path.includes('signin') || path.includes('signup'))) {
+      return <Redirect to={{ pathname: '/home' }} />;
+    }
+    return <Component {...props} />;
+  };
 
-  // isLoggedIn ? Component : <Redirect to={{pathname: '/signin'}}/>
+  return (
+    <Route exact path={path} render={renderRoute} {...rest} />
+  );
 };
 
 AuthRoute.propTypes = {
   component: PropTypes.elementType.isRequired,
-  isLoggedIn: PropTypes.bool
+  isLoggedIn: PropTypes.bool,
+  path: PropTypes.string,
+  isAuthRequired: PropTypes.bool
 };
 
 AuthRoute.defaultProps = {
-  isLoggedIn: false
+  isLoggedIn: false,
+  path: '/',
+  isAuthRequired: false
 };
 
 const mapStateToProps = state => ({
-  isLoggedIn: !!state.accessToken
+  isLoggedIn: !!state.user.accessToken
 });
 
-export default connect(mapStateToProps, null)(AuthRoute);
+export default connect(mapStateToProps)(AuthRoute);
