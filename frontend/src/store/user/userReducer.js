@@ -2,8 +2,9 @@ import * as actionTypes from 'store/user/actionTypes';
 
 const initialState = {
   accessToken: null,
-  handle: null,
-  userEmail: null,
+  credentials: {},
+  likes: [],
+  notifications: [],
   isAuthInProgress: false
 };
 
@@ -17,15 +18,24 @@ export default (state = initialState, action) => {
     case actionTypes.SIGN_UP:
       return {
         ...state,
-        accessToken: action.accessToken,
-        email: action.email,
-        handle: action.handle
+        accessToken: action.accessToken
       };
     case actionTypes.CHANGE_AUTH_PROGRESS_STATUS:
       return {
         ...state,
         isAuthInProgress: action.isAuthInProgress
       };
+    case actionTypes.GET_USER: {
+      console.log('getUser reducer', action);
+      return {
+        ...state,
+        credentials: {
+          ...action.user.credentials
+        },
+        likes: [...action.user.likes],
+        notifications: [...action.user.notifications]
+      };
+    }
     default: return state;
   }
 };

@@ -1,5 +1,5 @@
 import * as actionTypes from 'store/user/actionTypes';
-import { signin, signup } from 'services/user';
+import { signin, signup, getUser } from 'services/user';
 import { setAuthorizationHeader } from 'services/api';
 
 export const signUpAction = (credentials, pushToHistory) => async dispatch => {
@@ -12,6 +12,7 @@ export const signUpAction = (credentials, pushToHistory) => async dispatch => {
       handle: credentials.handle
     });
     setAuthorizationHeader(res.data.token);
+    dispatch(getUserAction());
     pushToHistory('/');
   } catch (e) {
     console.error(e);
@@ -26,7 +27,21 @@ export const signInAction = (credentials, pushToHistory) => async dispatch => {
       accessToken: res.data.token
     });
     setAuthorizationHeader(res.data.token);
+    dispatch(getUserAction());
     pushToHistory('/');
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getUserAction = () => async (dispatch, getState) => {
+  try {
+    console.log('getUserAction', getState());
+    const { data } = await getUser();
+    dispatch({
+      type: actionTypes.GET_USER,
+      user: data
+    });
   } catch (e) {
     console.error(e);
   }

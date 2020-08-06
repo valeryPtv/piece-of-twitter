@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LikeButton from 'components/LikeButton';
-import { likeScream } from 'services/screams';
+import { likeScream, unlikeScream } from 'services/screams';
 
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
@@ -26,13 +26,19 @@ class ScreamCard extends Component {
     isLiked: false
   }
 
-  handleLikeScream = async () => {
-    this.setState(state => ({
-      ...state,
-      isLiked: !state.isLiked
-    }));
-    const { data } = await likeScream(this.props.scream.screamId);
-    console.log('res like scream', data);
+  handleLikeScream = async isLiked => {
+    // this.setState(state => ({
+    //   ...state,
+    //   isLiked: !state.isLiked
+    // }));
+    try {
+      const requestScreamLike = !isLiked ? likeScream : unlikeScream;
+      const { data } = await requestScreamLike(this.props.scream.screamId);
+      await this.props.getScreams();
+      console.log('res like scream', data);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render () {
@@ -45,7 +51,7 @@ class ScreamCard extends Component {
       likeCount,
       commentCount
     } = this.props.scream;
-    const { isLiked } = this.state;
+    const { isLiked } = this.props;
     /*
     body: "hui"
     commentCount: 0
@@ -84,7 +90,7 @@ class ScreamCard extends Component {
           </Grid>
         </div>
         <Grid container alignItems="center">
-          <LikeButton isLiked={isLiked} handleLikeScream={this.handleLikeScream} />
+          <LikeButton isLiked={isLiked} handleLikeScream={this.handleLikeScream(isLiked)} />
           <Typography variant="body2" color="textSecondary">
             { likeCount }
           </Typography>

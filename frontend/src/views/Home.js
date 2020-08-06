@@ -2,19 +2,36 @@ import React, { Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import ScreamCard from 'components/screams/ScreamCard';
-import { getScreams } from 'services/screams';
+import { getScreams as getScreamsService } from 'services/screams';
+import { connect } from 'react-redux';
 
-export default class Home extends Component {
+class Home extends Component {
   state = {
     screams: []
   }
 
-  async componentDidMount () {
-    const { data: screams } = await getScreams();
-    this.setState(state => ({
-      ...state,
-      screams
-    }));
+  componentDidMount () {
+    this.getScreams();
+  }
+
+  getScreams = async () => {
+    try {
+      let { data: screams } = await getScreamsService();
+      const likesMap = {};
+      this.props.likes.forEach(like => {
+        likesMap[like.screamId] = like.userHandle;
+      });
+      screams = screams.map(scream => ({
+        ...scream,
+        isLiked: scream.screamId in likesMap
+      }));
+      this.setState(state => ({
+        ...state,
+        screams
+      }));
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   render () {
@@ -25,7 +42,7 @@ export default class Home extends Component {
           {
             this.state.screams.map(scream => (
               <Box key={scream.screamId} mb={3}>
-                <ScreamCard scream={scream} />
+                <ScreamCard scream={scream} isLiked={scream.isLiked} getScreams={this.getScreams} />
               </Box>
             ))
           }
@@ -34,3 +51,9 @@ export default class Home extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  likes: state.user.likes
+});
+
+export default connect(mapStateToProps)(Home);

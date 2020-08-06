@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import userReducer from 'store/user/userReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-import { createAxiosAuthMiddleware } from 'store/middlewares';
+// import { onStatePersist } from 'store/middlewares';
 
 const rootReducer = combineReducers({
   user: userReducer
@@ -22,6 +22,6 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const store = createStore(
-  persistedReducer, composeEnhancers(applyMiddleware(createAxiosAuthMiddleware, thunk))
+  persistedReducer, composeEnhancers(applyMiddleware(thunk))
 );
 export const persistor = persistStore(store);
