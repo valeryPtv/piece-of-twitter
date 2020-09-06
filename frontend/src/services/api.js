@@ -6,8 +6,10 @@ const instance = axios.create({
   baseURL: 'https://europe-west1-socialape228.cloudfunctions.net/api'
 });
 
+
 const setAuthorizationHeader = accessToken => {
   instance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 };
 
+window.axios = instance;
 export { instance as axios, setAuthorizationHeader };

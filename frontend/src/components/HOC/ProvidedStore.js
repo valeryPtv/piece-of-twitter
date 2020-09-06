@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import { getUserAction } from 'store/user/userActions';
 import { setAuthorizationHeader } from 'services/api';
 
-// this component is used to perform high level interactions with state
+// this component is used to perform high level interactions with state after state is initialized
 class ProvidedStore extends Component {
   componentDidMount () {
-    console.log(this.props);
     const { accessToken } = this.props;
     setAuthorizationHeader(accessToken);
     if (accessToken) {

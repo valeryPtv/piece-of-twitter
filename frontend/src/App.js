@@ -8,10 +8,10 @@ import 'styles/index.sass';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import themeConfig from 'util/theme';
-import AuthRoute from 'components/AuthRoute';
+import AuthRoute from 'components/HOC/AuthRoute';
 import { store, persistor } from 'store';
 import { getUserAction } from 'store/user/userActions';
-import ProvidedStore from 'components/utility/ProvidedStore';
+import ProvidedStore from 'components/HOC/ProvidedStore';
 
 // Pages
 import Home from 'views/Home';

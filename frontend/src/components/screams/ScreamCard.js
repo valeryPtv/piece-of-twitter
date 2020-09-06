@@ -1,18 +1,7 @@
 import React, { Component } from 'react';
-import LikeButton from 'components/LikeButton';
-import { likeScream, unlikeScream } from 'services/screams';
-
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardHeader from '@material-ui/core/CardHeader';
-import Button from '@material-ui/core/Button';
-import Favorite from '@material-ui/icons/Favorite';
-import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -20,22 +9,42 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import Avatar from '@material-ui/core/Avatar';
 import ChatBubbleOutline from '@material-ui/icons/ChatBubbleOutline';
+import IconButtonWithTooltip from 'components/util/IconButtonWithTooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+import { likeScream, unlikeScream, deleteScream } from 'services/screams';
+import LikeButton from 'components/util/LikeButton';
+import ScreamPostDialog from 'components/screams/ScreamPostDialog';
 
 class ScreamCard extends Component {
   state = {
-    isLiked: false
+    isLiked: this.props.isLiked,
+    likeCount: this.props.scream.likeCount,
+    commentCount: this.props.scream.likeCount
   }
 
-  handleLikeScream = async isLiked => {
-    // this.setState(state => ({
-    //   ...state,
-    //   isLiked: !state.isLiked
-    // }));
+  handleLikeScream = async () => {
+    this.setState(state => ({
+      ...state,
+      isLiked: !state.isLiked,
+      likeCount: state.isLiked ? state.likeCount - 1 : state.likeCount + 1
+    }));
     try {
-      const requestScreamLike = !isLiked ? likeScream : unlikeScream;
-      const { data } = await requestScreamLike(this.props.scream.screamId);
+      const requestScreamLike = !this.props.isLiked ? likeScream : unlikeScream;
+      await requestScreamLike(this.props.scream.screamId);
       await this.props.getScreams();
-      console.log('res like scream', data);
+      // console.log('res like scream', data);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
+  }
+
+  handleDeleteScream = async () => {
+    try {
+      console.log('handleDeleteScream');
+      await deleteScream(this.props.scream.screamId);
+      this.props.getScreams();
     } catch (e) {
       console.error(e);
     }
@@ -47,11 +56,9 @@ class ScreamCard extends Component {
       userImage,
       userHandle,
       body: screamBody,
-      createdAt,
-      likeCount,
-      commentCount
+      createdAt
     } = this.props.scream;
-    const { isLiked } = this.props;
+    const { isLiked, likeCount, commentCount } = this.state;
     /*
     body: "hui"
     commentCount: 0
@@ -63,12 +70,6 @@ class ScreamCard extends Component {
      */
     return (
       <Card className="scream-card scream-card--padding">
-        {/* <CardMedia */}
-        {/*  component="img" */}
-        {/*  alt="User image" */}
-        {/*  height="140" */}
-        {/*  image={scream.userImage} */}
-        {/* /> */}
         <div className="px-3 pt-3">
           <Grid container>
             <Box mr={3}>
@@ -76,10 +77,17 @@ class ScreamCard extends Component {
             </Box>
             {/* <Grid xs={1}> */}
             {/* </Grid> */}
-            <Grid>
-              <Typography variant="h6" component="h4" className="line-height-1 mb-2">
-                { userHandle }
-              </Typography>
+            <Grid item sm={11}>
+              <Grid container justify="space-between" alignContent="center">
+                <Typography variant="h6" component="h4" className="mb-2">
+                  { userHandle }
+                </Typography>
+                <IconButtonWithTooltip
+                  handleClick={this.handleDeleteScream}
+                  tooltipText="Delete scream"
+                  icon={<DeleteIcon className="text-red" />}
+                />
+              </Grid>
               <Typography variant="body2" color="textSecondary" gutterBottom>
                 { dayjs(createdAt).fromNow() }
               </Typography>
@@ -90,7 +98,7 @@ class ScreamCard extends Component {
           </Grid>
         </div>
         <Grid container alignItems="center">
-          <LikeButton isLiked={isLiked} handleLikeScream={this.handleLikeScream(isLiked)} />
+          <LikeButton isLiked={isLiked} handleLikeScream={this.handleLikeScream} />
           <Typography variant="body2" color="textSecondary">
             { likeCount }
           </Typography>
@@ -116,6 +124,7 @@ class ScreamCard extends Component {
 
 
 ScreamCard.propTypes = {
+  isLiked: PropTypes.bool.isRequired,
   scream: PropTypes.shape({
     body: PropTypes.string,
     commentCount: PropTypes.number,
@@ -124,11 +133,13 @@ ScreamCard.propTypes = {
     screamId: PropTypes.string,
     userHandle: PropTypes.string,
     userImage: PropTypes.string
-  })
+  }),
+  getScreams: PropTypes.func
 };
 
 ScreamCard.defaultProps = {
-  scream: {}
+  scream: {},
+  getScreams: () => {}
 };
 
 export default ScreamCard;
