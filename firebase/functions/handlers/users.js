@@ -55,11 +55,12 @@ exports.signup = (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      if (err.code === 'auth/email-already-in-use') {
-        return res.status(400).json({ email: 'Email is already in use' })
-      } else {
-        return res.status(500).json({ error: err.code });
-      }
+      // for auth errors we can use the following error codes
+      // err.code === auth/wrong-password
+      // err.code === auth/user-not-found
+        return res
+          .status(403)
+          .json({ general: 'Wrong credentials, please try again' });
     })
 }
 
@@ -100,6 +101,58 @@ exports.addUserDetails = (req, res) => {
       return res.status(500).json({ error: err.code });
     })
 }
+// Get any user's details
+exports.getUserDetails = (req, res) => {
+  let userData = {};
+  db.doc(`/users/${req.params.handle}`).get()
+    .then(doc => {
+      if (doc.exists) {
+        userData.user = doc.data();
+        return db
+          .collection('screams')
+          .where('userHandle', '==', req.params.handle)
+          .orderBy('createdAt', 'desc')
+          .get();
+      } else {
+        return res.status(404).json({ error: 'User not found' })
+      }
+    })
+    .then(data => {
+      userData.screams = [];
+      data.forEach(doc => {
+        userData.screams.push({
+          body: doc.data().body,
+          createdAt: doc.data().createdAt,
+          userHandle: doc.data().userHandle,
+          userImage: doc.data().userImage,
+          likeCount: doc.data().likeCount,
+          commentCount: doc.data().commentCount,
+          screamId: doc.id
+        })
+      })
+      return res.json(userData);
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: err.code });
+    })
+}
+
+exports.markNotificationsRead = (req, res) => {
+  let batch = db.batch();
+  req.body.forEach(notificationId => {
+    const notification = db.doc(`/notifications/${notificationId}`);
+    batch.update(notification, { read: true });
+  });
+  batch.commit()
+    .then(() => {
+      return res.json({ message: 'Notifications marked read' });
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: err.code })
+    })
+}
 
 // Get own user details
 exports.getAuthenticatedUser = (req, res) => {
@@ -107,6 +160,7 @@ exports.getAuthenticatedUser = (req, res) => {
   // get user
   db.doc(`/users/${req.user.handle}`).get()
     .then(doc => {
+      // eslint-disable-next-line promise/always-return
       if (doc.exists) {
         userData.credentials = doc.data();
         return db.collection('likes').where('userHandle', '==', req.user.handle).get();
@@ -116,6 +170,26 @@ exports.getAuthenticatedUser = (req, res) => {
       userData.likes = [];
       data.forEach(doc => {
         userData.likes.push(doc.data());
+      })
+      return db
+        .collection('notifications')
+        .where('recipient', '==', req.user.handle)
+        .orderBy('createdAt', 'desc')
+        .limit(10)
+        .get()
+    })
+    .then(data => {
+      userData.notifications = [];
+      data.forEach(doc => {
+        userData.notifications.push({
+          recipient: doc.data().recipient,
+          sender: doc.data().sender,
+          createdAt: doc.data().createdAt,
+          screamId: doc.data().screamId,
+          type: doc.data().type,
+          read: doc.data().read,
+          notificationId: doc.id
+        });
       })
       return res.json(userData);
     })

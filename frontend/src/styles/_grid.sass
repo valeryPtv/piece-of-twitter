@@ -1,0 +1,213 @@
+//$map-grid-props: ('': 0, '-sm': $grid__bp-sm, '-md': $grid__bp-md, '-lg': $grid__bp-lg, '-xl': $grid__bp-xl, '-xxl': $grid__bp-xxl)
+$spacing-variables: ('1': .25, '2': .5, '3': 1, '4': 1.5, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7)
+$spacer: 1rem
+
+//$breakpoints: (xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1400px) !default
+
+$breakpoints: (xs: 0, sm: 768, md: 992, lg: 1200, xl: 1920) !default
+$breakpointsWithPrefixes: ('-xs': 0, '-sm': 768, '-md': 992, '-lg': 1200, '-xl': 1920) !default
+
+@mixin create-mq($breakpoint, $min-or-max)
+  @if($breakpoint == 0)
+    @content
+  @else
+  @media all and (#{$min-or-max}-width: $breakpoint *1px)
+    @content
+
+@mixin breakpoint-min($breakpoint)
+  @if map-has-key($breakpoints, $breakpoint)
+    $val: map-get($breakpoints, $breakpoint) - 1px
+    @media (min-width: rem( $val ))
+      @content
+  @else
+  @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "+ "Please make sure it is defined in `$breakpoints` map."
+
+@mixin breakpoint-max($breakpoint)
+  @if map-has-key($breakpoints, $breakpoint)
+    $val: map-get($breakpoints, $breakpoint) - 1px
+    @media (max-width: rem( $val ))
+      @content
+  @else
+  @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "+ "Please make sure it is defined in `$breakpoints` map."
+
+@each $modifier, $breakpoint in $breakpointsWithPrefixes
+  @include create-mq($breakpoint, 'min')
+    @if ($modifier == '-xs')
+      $modifier: ''
+
+    .w#{$modifier}-100
+      width: 100% !important
+
+    .hidden#{$modifier}
+      display: none !important
+
+    .d#{$modifier}-flex
+      display: flex !important
+
+    .d#{$modifier}-inline-flex
+      display: flex !important
+
+    .d#{$modifier}-block
+      display: block !important
+
+    .d#{$modifier}-inline-block
+      display: inline-block !important
+
+    .flex#{$modifier}-row
+      flex-direction: row !important
+
+    .flex#{$modifier}-column
+      flex-direction: column !important
+
+    .flex-grow#{$modifier}-1
+      flex-grow: 1 !important
+
+    .flex#{$modifier}-wrap
+      flex-wrap: wrap
+
+    .align#{$modifier}-start
+      align-items: flex-start !important
+
+    .align#{$modifier}-end
+      align-items: flex-end !important
+
+    .align#{$modifier}-center
+      align-items: center !important
+      display: flex
+
+    .justify#{$modifier}-center
+      justify-content: center !important
+      display: flex
+
+    .text#{$modifier}-center
+      text-align: center !important
+
+    .text#{$modifier}-right
+      text-align: right !important
+
+    .text#{$modifier}-left
+      text-align: left !important
+
+    @each $preffix, $value in $spacing-variables
+      @if ($modifier == 'xs')
+        $modifier: ''
+
+      .ma#{$modifier}-#{$preffix}
+        margin: ($spacer * $value) !important
+
+      .my#{$modifier}-#{$preffix}
+        margin-top: ($spacer * $value) !important
+        margin-bottom: ($spacer * $value) !important
+
+      .mx#{$modifier}-#{$preffix}
+        margin-left: ($spacer * $value) !important
+        margin-right: ($spacer * $value) !important
+
+      .mt#{$modifier}-#{$preffix}
+        margin-top: ($spacer * $value) !important
+
+      .mr#{$modifier}-#{$preffix}
+        margin-right: ($spacer * $value) !important
+
+      .mb#{$modifier}-#{$preffix}
+        margin-bottom: ($spacer * $value) !important
+
+      .ml#{$modifier}-#{$preffix}
+        margin-left: ($spacer * $value) !important
+
+      .pa#{$modifier}-#{$preffix}
+        padding: ($spacer * $value) !important
+
+      .py#{$modifier}-#{$preffix}
+        padding-top: ($spacer * $value) !important
+        padding-bottom: ($spacer * $value) !important
+
+      .px#{$modifier}-#{$preffix}
+        padding-left: ($spacer * $value) !important
+        padding-right: ($spacer * $value) !important
+
+      .pt#{$modifier}-#{$preffix}
+        padding-top: ($spacer * $value) !important
+
+      .pr#{$modifier}-#{$preffix}
+        padding-right: ($spacer * $value) !important
+
+      .pb#{$modifier}-#{$preffix}
+        padding-bottom: ($spacer * $value) !important
+
+      .pl#{$modifier}-#{$preffix}
+        padding-left: ($spacer * $value) !important
+
+    @include create-mq($breakpoint - 1, 'max')
+      .w#{$modifier}-100-down
+        width: 100% !important
+
+      .hidden#{$modifier}-down
+        display: none !important
+
+      .align#{$modifier}-center-down
+        align-items: center !important
+        display: flex
+
+      .flex#{$modifier}-row-down
+        flex-direction: row !important
+
+      .flex#{$modifier}-column-down
+        flex-direction: column !important
+
+      .flex-grow#{$modifier}-1-down
+        flex-grow: 1 !important
+
+      .flex#{$modifier}-wrap-down
+        flex-wrap: wrap
+
+      .align#{$modifier}-start-down
+        align-items: flex-start !important
+
+      .align#{$modifier}-end-down
+        align-items: end !important
+
+      .justify#{$modifier}-center-down
+        justify-content: center !important
+        display: flex
+
+      .text#{$modifier}-center-down
+        text-align: center !important
+
+      .text#{$modifier}-right-down
+        text-align: right !important
+
+      .text#{$modifier}-left-down
+        text-align: left !important
+
+      .d#{$modifier}-flex-down
+        display: flex !important
+
+      .d#{$modifier}-inline-flex-down
+        display: flex !important
+
+      .d#{$modifier}-block-down
+        display: block !important
+
+      .d#{$modifier}-inline-block-down
+        display: inline-block !important
+
+//@mixin create-col-classes($modifier, $grid-cols, $breakpoint)
+  @include create-mq($breakpoint, 'min')
+    .__co-#{$modifier}-offset-0
+      margin-left: 0
+    @for $i from 1 through $grid-cols
+      .__co-#{$modifier}-#{$i}
+        flex-basis: (100 / ($grid-cols / $i)) * 1%
+        display: flex
+        align-items: flex-start
+        flex-wrap: wrap
+        padding: 0
+      .__co-#{$modifier}-offset-#{$i}
+        margin-left: (100 / ($grid-cols / $i)) * 1%
+
+
+
+
+  //@each $modifier, $breakpoint in $map-grid-props
+  //  @include create-col-classes($modifier, $grid__cols, $breakpoint)
