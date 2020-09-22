@@ -14,7 +14,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { likeScream, unlikeScream, deleteScream } from 'services/screams';
 import LikeButton from 'components/util/LikeButton';
-import ScreamPostDialog from 'components/screams/ScreamPostDialog';
 
 class ScreamCard extends Component {
   state = {

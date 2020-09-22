@@ -5,7 +5,6 @@ import thunk from 'redux-thunk';
 import userReducer from 'store/user/userReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-// import { onStatePersist } from 'store/middlewares';
 
 const rootReducer = combineReducers({
   user: userReducer

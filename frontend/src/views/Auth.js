@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-
+import { withRouter } from 'react-router';
+import GoogleLogin from 'react-google-login';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { withRouter } from 'react-router';
 
 import logoImg from 'images/icon.png';
 import { signUpAction, signInAction } from 'store/user/userActions';
@@ -145,6 +145,10 @@ class Auth extends Component {
                     { this.state.activeMode === 'signup' ? 'Sign up' : 'Sign in' }
                   </Button>
                 </Box>
+                <ReactGoogleLogin />
+                {/*<Button onClick={this.handleSignOAuth} variant="contained" color="primary" className="mb-3">*/}
+                {/*  Sign using oAuth2*/}
+                {/*</Button>*/}
                 { changeAuthMode }
               </Grid>
             </form>
